@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dto.WeatherResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -53,5 +54,26 @@ public class RequestHandler {
         Response response = okHttpClient.newCall(request).execute();
 
         return response.body().string();
+    }
+
+    public static WeatherResponse getForecasts(String cityCode) throws IOException {
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme(scheme)
+                .host(host)
+                .addPathSegment("forecasts")
+                .addPathSegment("v1")
+                .addPathSegment("daily")
+                .addPathSegment("5day")
+                .addPathSegment(cityCode)
+                .addQueryParameter("apikey", "4afIvk3pKkJtWzzRhfHAe1T6tGcqD8aq")
+                .addQueryParameter("metric", "true")
+                .build();
+        Request request = new Request.Builder()
+                .addHeader("Accept", "application/json")
+                .url(httpUrl)
+                .build();
+        Response response = okHttpClient.newCall(request).execute();
+
+        return objectMapper.readValue(response.body().string(), WeatherResponse.class);
     }
 }
